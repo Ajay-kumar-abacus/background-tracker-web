@@ -16,7 +16,7 @@ export declare class DatabaseService {
     private jsonHeaders;
     private formHeaders;
     getRequest(endpoint: string, data?: any): any;
-    postRequest(endpoint: string, data: any): any;
+    post_rqst(endpoint: string, data: any): any;
     uploadFile(endpoint: string, formData: any): any;
     exportAsExcelFile(json: any[], fileName: string): void;
     private saveAsExcelFile;

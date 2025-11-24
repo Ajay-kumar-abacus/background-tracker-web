@@ -59,7 +59,7 @@ export class DatabaseService {
     );
   }
 
-  postRequest(endpoint: string, data: any) {
+  post_rqst(endpoint: string, data: any) {
     return this.http.post(
       this.baseUrl + endpoint,
       JSON.stringify(data),

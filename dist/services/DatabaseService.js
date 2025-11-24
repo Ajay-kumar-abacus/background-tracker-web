@@ -52,7 +52,7 @@ let DatabaseService = class DatabaseService {
     getRequest(endpoint, data) {
         return this.http.post(this.baseUrl + endpoint, JSON.stringify(data || {}), { headers: this.jsonHeaders() });
     }
-    postRequest(endpoint, data) {
+    post_rqst(endpoint, data) {
         return this.http.post(this.baseUrl + endpoint, JSON.stringify(data), { headers: this.jsonHeaders() });
     }
     uploadFile(endpoint, formData) {
