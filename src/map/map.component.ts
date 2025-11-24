@@ -70,7 +70,7 @@ interface PlaybackControl {
         </div>
 
         <div class="employee-details" *ngIf="employeeData">
-          <h3>{{ employeeData.name || 'Employee Name' }}</h3>
+          <h3>{{ employeeData.name || 'Employee Name1' }}</h3>
           <p>
             <span class="employee-meta-item">
               <i class="material-icons" style="font-size: 14px;">badge</i>
