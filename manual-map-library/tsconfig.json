@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es2017",          // <-- upgraded (you can also keep es2015 if you want)
+    "module": "es2015",
+    "moduleResolution": "node",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "lib": ["es2017", "dom"]     // <-- IMPORTANT: was es2015, now es2017
+  },
+  "include": ["src/**/*"]
+}

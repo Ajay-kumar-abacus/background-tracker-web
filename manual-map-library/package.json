@@ -1,0 +1,12 @@
+{
+  "name": "tracking-map-manual",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "peerDependencies": {
+    "@angular/core": "^7.0.0",
+    "@angular/common": "^7.0.0",
+    "@angular/forms": "^7.0.0",
+    "@angular/material": "^7.3.7"
+  }
+}
