@@ -50,6 +50,7 @@ let MapComponent = class MapComponent {
         this.groupedPermissions = {};
         this.selectedHour = '';
         this.hourlyStats = {};
+        this.summarizeData = {};
         this.showTimelineMap = false;
         this._isSidebarVisible = false;
         // Live Users Tracking Properties

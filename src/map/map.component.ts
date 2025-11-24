@@ -5252,6 +5252,7 @@ permissionsList: any[] = [];
 groupedPermissions: any = {};
 selectedHour: string = '';
 hourlyStats: any = {};
+summarizeData: any = {}; 
 
   showTimelineMap: boolean = false;
   timelineMapView: any;
@@ -5345,7 +5346,7 @@ hourlyStats: any = {};
   playbackDateTime: any;
   total_distance: any;
   debugFlag: any = false;
-  summarizeData: any;
+  
   snapToRoad: boolean = false;
   end_point: any;
   start_point: any;

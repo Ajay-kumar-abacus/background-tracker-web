@@ -61,6 +61,7 @@ export declare class MapComponent implements OnInit, OnDestroy {
     groupedPermissions: any;
     selectedHour: string;
     hourlyStats: any;
+    summarizeData: any;
     showTimelineMap: boolean;
     timelineMapView: any;
     private chart;
@@ -113,7 +114,6 @@ export declare class MapComponent implements OnInit, OnDestroy {
     playbackDateTime: any;
     total_distance: any;
     debugFlag: any;
-    summarizeData: any;
     snapToRoad: boolean;
     end_point: any;
     start_point: any;
