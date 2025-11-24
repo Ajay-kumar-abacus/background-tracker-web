@@ -2,7 +2,6 @@ import { OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
 import { ErrorService } from './error.service';
 export declare class DatabaseService implements OnInit {
     http: HttpClient;
@@ -49,15 +48,15 @@ export declare class DatabaseService implements OnInit {
     ngOnInit(): void;
     setData(data: any): void;
     getData(): any;
-    auth_rqust(data: any, fn: any): Observable<Object>;
+    auth_rqust(data: any, fn: any): any;
     pickerFormat(val: any, format?: any): void;
-    fetchData(data: any, fn: any): Observable<Object>;
+    fetchData(data: any, fn: any): any;
     can_active: any;
-    LogInCheck(username: any, password: any): Observable<Object>;
+    LogInCheck(username: any, password: any): any;
     exportAsExcelFile(json: any[], excelFileName: string): void;
     private saveAsExcelFile;
-    upload_image(val: any, fn_name: any): Observable<Object>;
-    FileData(request_data: any, fn: any): Observable<Object>;
+    upload_image(val: any, fn_name: any): any;
+    FileData(request_data: any, fn: any): any;
     private extractData;
     get_rqst2(request_data: any, fn: any): any;
     share_data: any;

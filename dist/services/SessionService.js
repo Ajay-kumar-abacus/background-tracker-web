@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a, _b;
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DatabaseService } from './DatabaseService';
@@ -71,6 +72,6 @@ let SessionStorage = class SessionStorage {
 };
 SessionStorage = __decorate([
     Injectable({ providedIn: 'root' }),
-    __metadata("design:paramtypes", [ActivatedRoute, Router, DatabaseService])
+    __metadata("design:paramtypes", [typeof (_a = typeof ActivatedRoute !== "undefined" && ActivatedRoute) === "function" ? _a : Object, typeof (_b = typeof Router !== "undefined" && Router) === "function" ? _b : Object, DatabaseService])
 ], SessionStorage);
 export { SessionStorage };

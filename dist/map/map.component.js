@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c, _d, _e;
 import { Component, ViewChild, ElementRef, Renderer2, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -2280,20 +2281,5191 @@ let MapComponent = class MapComponent {
 };
 __decorate([
     ViewChild('trackingMap'),
-    __metadata("design:type", ElementRef)
+    __metadata("design:type", typeof (_e = typeof ElementRef !== "undefined" && ElementRef) === "function" ? _e : Object)
 ], MapComponent.prototype, "mapElement", void 0);
 MapComponent = __decorate([
     Component({
         selector: 'app-map',
-        templateUrl: './map.component.html',
-        styleUrls: ['./map.component.scss']
+        template: `
+ <div class="main-container" style="overflow:overlay">
+  <div class="location-tracker-container">
+
+    <!-- Employee Info Card -->
+    <!-- Modern Employee Card Template -->
+    <div class="employee-card" *ngIf="!isLoading && !isSidebarVisible">
+      <div class="employee-header">
+        <div class="employee-avatar">
+          <i class="material-icons">person</i>
+        </div>
+
+        <div class="employee-details" *ngIf="employeeData">
+          <h3>{{ employeeData.name || 'Employee Name' }}</h3>
+          <p>
+            <span class="employee-meta-item">
+              <i class="material-icons" style="font-size: 14px;">badge</i>
+              {{ employeeData.employee_id || 'EMP001' }}
+            </span>
+            <span class="employee-meta-item">
+              <i class="material-icons" style="font-size: 14px;">phone</i>
+              {{ employeeData.contact_01 || '+91 XXXX XXX XXX' }}
+            </span>
+          </p>
+          <div class="user-selection">
+            <div class="dropdown-container">
+              <label for="dateSelect">Select Date</label>
+              <div class="header-actions">
+                <input type="date" id="dateSelect" [(ngModel)]="selectedDate" (change)="onDateChange()" [max]="maxDate"
+                  class="date-input-small">
+              </div>
+            </div>
+
+           <div class="dropdown-container">
+  <label for="userSearch">Select Employee</label>
+
+  <div class="custom-dropdown" (click)="showList()">
+    <!-- Search box inside dropdown -->
+    <input
+      type="text"
+      id="userSearch"
+      placeholder="Search employee..."
+      [(ngModel)]="searchTerm"
+      (input)="loadUsersList()"
+      class="user-search"
+    />
+
+    <!-- Dropdown list -->
+    <ul class="dropdown-list" *ngIf="userList?.length && userListing">
+      <li 
+        *ngFor="let user of userList"
+        (click)="selectUser(user)"
+        [class.selected]="selectedUserId === user.id"
+      >
+        {{ user.name }} - {{ user.employee_id }}
+      </li>
+    </ul>
+
+    <!-- Loading indicator -->
+    <div class="loading-spinner-small" *ngIf="isLoadingUsers"></div>
+  </div>
+</div>
+
+
+          </div>
+        </div>
+        <div class="kpi-grid" *ngIf="!isSidebarVisible && !isLoading && selectedUserId">
+
+
+
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">GPS Distance</span>
+                <span class="kpi-value">{{total_distance || 0}} KM</span>
+                <span class="kpi-subtitle">today</span>
+              </div>
+              <div class="kpi-icon kpi-icon-purple">
+                <i class="material-icons">route</i>
+              </div>
+            </div>
+          </div>
+            <div class="kpi-card clickable" (click)="showMeterDistance()">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">Meter Distance</span>
+                <span class="kpi-value">{{ getTotalDistance() }} KM</span>
+                <span class="kpi-subtitle clickable-subtitle">Click to view images</span>
+              </div>
+              <div class="kpi-icon kpi-icon-purple">
+                <i class="material-icons">route</i>
+              </div>
+            </div>
+          </div>
+          <div class="kpi-card clickable" (click)="showCheckinTimeline()">
+  <div class="kpi-content">
+    <div class="kpi-info">
+      <span class="kpi-label">Checkin Distance</span>
+      <span class="kpi-value">{{summaryTimelineCheckin?.total_direct_km || 0}} KM</span>
+      <span class="kpi-subtitle clickable-subtitle">Click to view timeline</span>
+    </div>
+    <div class="kpi-icon kpi-icon-purple">
+      <i class="material-icons">route</i>
+    </div>
+  </div>
+</div>
+
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">Active Time</span>
+                <span class="kpi-value">{{activeTime|| 0}}</span>
+                <span class="kpi-subtitle">today</span>
+              </div>
+              <div class="kpi-icon kpi-icon-purple">
+                <i class="material-icons">schedule</i>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">Battery</span>
+                <span class="kpi-value">{{summarizeData?.battery_level ? summarizeData.battery_level + '%' :
+                  '--'}}</span>
+                <span class="kpi-subtitle">across devices</span>
+              </div>
+             <div class="aurora-battery-section">
+              <div class="aurora-battery-visual">
+                <div class="aurora-battery-shell" [style.border-color]="getBatteryColor(summarizeData?.battery_level)">
+                  <div class="aurora-battery-core" 
+                       [style.height.%]="summarizeData?.battery_level"
+                       [style.background]="getBatteryColor(summarizeData?.battery_level)">                        
+                  </div>
+                 
+                  <div class="aurora-battery-tip" [style.background]="getBatteryColor(summarizeData?.battery_level)"></div>
+                </div>
+               
+              </div>
+            </div>
+            </div>
+          </div>
+           
+          <div class="kpi-card" (click)="showMissingPermissions()"
+            [style.cursor]="missingPermissionsCount > 0 ? 'pointer' : 'default'">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">Missing Permissions</span>
+                <span class="kpi-value">{{missingPermissionsCount}}</span>
+                <span class="kpi-subtitle " [ngClass]="missingPermissionsCount>0 ?'blinking-red':''">action
+                  needed</span>
+              </div>
+              <div class="kpi-icon kpi-icon-green">
+                <i class="material-icons">location_on</i>
+              </div>
+            </div>
+          </div>
+            <div class="kpi-card">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-label">Attendance Variation</span>
+                <span class="kpi-value">{{attendanceVariation|| 0}}</span>
+                <span class="kpi-subtitle">today</span>
+              </div>
+              <div class="kpi-icon kpi-icon-purple">
+                <i class="material-icons">schedule</i>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="showMoreKpis">
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">Total Calls (TC)</span>
+                  <span class="kpi-value">{{ TC || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-blue">
+                  <i class="material-icons">call</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">Productive Calls (PC)</span>
+                  <span class="kpi-value">{{ PC || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-green">
+                  <i class="material-icons">call_made</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">Secondary Sale</span>
+                  <span class="kpi-value">₹ {{ secondary_sale_amount || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-orange">
+                  <i class="material-icons">shopping_cart</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">New Counter TC</span>
+                  <span class="kpi-value">{{ New_counter_TC || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-teal">
+                  <i class="material-icons">add_call</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">New Counter PC</span>
+                  <span class="kpi-value">{{ New_counter_PC || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-lime">
+                  <i class="material-icons">add_shopping_cart</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">New counter Primary Value</span>
+                  <span class="kpi-value">₹ {{ counter_primary_Value || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-orange">
+                  <i class="material-icons">shopping_cart</i>
+                </div>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <div class="kpi-info">
+                  <span class="kpi-label">New counter Secondary Value</span>
+                  <span class="kpi-value">₹ {{ counter_secondary_Value || 0 }}</span>
+                  <span class="kpi-subtitle">today</span>
+                </div>
+                <div class="kpi-icon kpi-icon-orange">
+                  <i class="material-icons">shopping_cart</i>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="kpi-card kpi-toggle-card" (click)="showMoreKpis = !showMoreKpis">
+            <div class="kpi-content">
+              <div class="kpi-info">
+                <span class="kpi-value">{{ showMoreKpis ? 'Show Less' : 'Show More' }}</span>
+              </div>
+              <div class="kpi-icon kpi-icon-blue">
+                <i class="material-icons">{{ showMoreKpis ? 'unfold_less' : 'unfold_more' }}</i>
+              </div>
+            </div>
+          </div>
+
+        
+        </div>
+
+        
+
+ 
+      </div>
+       <div class="header-info" *ngIf="isToday()">
+              <span *ngIf="summarizeData.device_model">{{ summarizeData.device_model }} ( {{
+                summarizeData.android_version }})</span>
+              <span *ngIf="summarizeData.created_at">Last updated: {{ summarizeData.created_at | date:'medium' }}</span>
+            </div>
+             <div class="header-info" *ngIf="!isToday()">
+              <span *ngIf="summarizeData.device_model">{{ summarizeData.device_model }} (Android {{
+                summarizeData.android_version }})</span>
+            </div>
+
+      <!-- Modern Control Section -->
+
+    </div>
+
+<!-- Checkin Timeline Alert Modal -->
+<!-- Checkin Timeline Side Panel -->
+<div class="checkin-timeline-overlay" *ngIf="showCheckinAlert" (click)="closeCheckinAlert()">
+  <div class="checkin-timeline-sidepanel" (click)="$event.stopPropagation()">
+    <div class="checkin-timeline-header">
+      <button class="checkin-timeline-close" (click)="closeCheckinAlert()" aria-label="Close timeline">
+        <i class="material-icons">close</i>
+      </button>
+      <h3 class="checkin-timeline-title">Check-in Journey Timeline</h3>
+    </div>
+
+    <div class="checkin-timeline-content">
+      <div class="checkin-summary-box">
+        <div class="checkin-summary-item">
+          <span class="summary-label">Total Distance</span>
+          <span class="summary-value">{{summaryTimelineCheckin?.total_route_km || 0}} KM</span>
+        </div>
+        <div class="checkin-summary-item">
+          <span class="summary-label">Shortest Distance</span>
+          <span class="summary-value">{{summaryTimelineCheckin?.total_direct_km || 0}} KM</span>
+        </div>
+         <!-- <div class="checkin-summary-item">
+          <span class="summary-label">Check-in to Check-out</span>
+          <span class="summary-value">{{summaryTimelineCheckin?.checkin_to_checkin_route_km || 0}} KM</span>
+        </div>
+         <div class="checkin-summary-item">
+          <span class="summary-label">Check-in to Check-Out Shortest</span>
+          <span class="summary-value">{{summaryTimelineCheckin?.checkin_to_checkin_direct_km || 0}} KM</span>
+        </div> -->
+        <!-- <div class="checkin-summary-item">
+          <span class="summary-label">Total Stops</span>
+          <span class="summary-value">{{summaryTimelineCheckin?.total_stops || 0}}</span>
+        </div> -->
+      </div>
+
+      <div class="checkin-timeline-list">
+        <div class="checkin-event-card" *ngFor="let event of timelineCheckin; let i = index">
+          <div class="checkin-event-sidebar">
+            <div class="checkin-event-number">{{event.sequence}}</div>
+            <div class="checkin-event-line" *ngIf="i < timelineCheckin?.length - 1"></div>
+          </div>
+          
+          <div class="checkin-event-content">
+            <div class="checkin-event-header">
+              <span class="checkin-event-type" [ngClass]="'type-' + event.type">
+                <i class="material-icons">
+                  {{event.type === 'attendance_start' ? 'play_circle' : 
+                    event.type === 'attendance_stop' ? 'stop_circle' : 
+                    event.type === 'checkin' ? 'where_to_vote' : 'place'}}
+                </i>
+                {{event.type === 'attendance_start' ? 'Day Start' : 
+                  event.type === 'attendance_stop' ? 'Day End' : 
+                  event.type === 'checkin' ? 'Check-in' : event.type}}
+              </span>
+              <!-- Show single time for non-checkin events -->
+              <span *ngIf="event.type !== 'checkin'" class="checkin-event-time">
+                {{event.datetime | date:'h:mm a'}}
+              </span>
+              <!-- Show start and end time for checkin events -->
+              <div *ngIf="event.type === 'checkin' && findCheckinById(event.details?.checkin_id) as checkinDetails">
+                <span class="checkin-event-time" style="font-size: 11px; display: block; text-align: right;">
+                  <strong>In:</strong> {{ checkinDetails.visit_start | date:'h:mm a' }}
+                </span>
+                <span *ngIf="checkinDetails.visit_end" class="checkin-event-time" style="font-size: 11px; display: block; text-align: right;">
+                  <strong>Out:</strong> {{ checkinDetails.visit_end | date:'h:mm a' }}
+                </span>
+                <ng-container *ngIf="checkinDetails.visit_end">
+                  <div class="checkin-event-duration">
+                    <i class="material-icons">timer</i>
+                    <span>{{ calculateDuration(checkinDetails.visit_start, checkinDetails.visit_end) != null ? calculateDuration(checkinDetails.visit_start, checkinDetails.visit_end) : '--' }}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            
+            <div class="checkin-event-description">{{event.description}}</div>
+            
+            <div class="checkin-event-details" *ngIf="event.details">
+              <i class="material-icons">business</i>
+              <span>{{event.details.dr_name}}</span>
+            </div>
+            
+            <div class="checkin-event-location" *ngIf="event.location">
+              <i class="material-icons">location_on</i>
+              <span>{{event.location.address}}</span>
+            </div>
+            
+            <div class="checkin-event-distance" *ngIf="event.distance_from_previous">
+              <div class="distance-badge">
+                <i class="material-icons">straighten</i>
+                <span>{{event.distance_from_previous.km}} KM from last point</span>
+              </div>
+              <!-- <div class="cumulative-badge">
+                Total: {{event.cumulative_km}} KM
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Custom Alert Modal -->
+    <div class="alert-overlay" *ngIf="showAlert">
+      <div class="alert-container">
+        <div class="alert-header">
+          <div class="alert-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="m12 17.02.01 0" />
+            </svg>
+          </div>
+          <h3 class="alert-title">Tracking Accuracy Issues</h3>
+          <button class="alert-close" (click)="closeAlert()" aria-label="Close alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="alert-content">
+          <p class="alert-description">The following issues are affecting tracking accuracy and need attention:</p>
+
+          <div class="issues-list">
+            <div class="issue-item" *ngFor="let issue of missingPermissions">
+              <div class="issue-bullet"></div>
+              <span class="issue-text">{{ issue }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert-actions">
+          <button class="btn-secondary" (click)="closeAlert()">Dismiss</button>
+          <button class="btn-primary" (click)="resolveIssues()">Resolve Issues</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Missing Permissions Disclaimer Modal -->
+    <div class="alert-overlay" *ngIf="showPermissionsDisclaimer">
+      <div class="alert-container">
+        <div class="alert-header" style="background-color: #ffc107;">
+          <div class="alert-icon" style="color: #212529;">
+            <svg width="24" height="24" viewBox="0 0 24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="m12 17.02.01 0" />
+            </svg>
+          </div>
+          <h3 class="alert-title" style="color: #212529;">Missing Permissions Disclaimer</h3>
+        </div>
+        <div class="alert-content">
+          <p class="alert-description">
+            Please note that routing and distance calculations may be affected due to missing permissions. Ensure all necessary permissions are granted for accurate tracking.
+          </p>
+        </div>
+        <div class="alert-actions">
+          <button class="btn-secondary" (click)="showPermissionsDisclaimer = false">Dismiss</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Android Version Warning Modal -->
+    <div class="alert-overlay" *ngIf="summarizeData?.android_version && +summarizeData.android_version <= 12">
+      <div class="alert-container">
+        <div class="alert-header" style="background-color: #ffc107;">
+          <div class="alert-icon" style="color: #212529;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="m12 17.02.01 0" />
+            </svg>
+          </div>
+          <h3 class="alert-title" style="color: #212529;">Android Version Disclaimer</h3>
+        </div>
+
+        <div class="alert-content">
+          <p class="alert-description">
+            This device is running <strong>Android {{summarizeData.android_version}}</strong>.
+            For Android versions 12 and below, Google may restrict background location access, which can affect live tracking accuracy.
+          </p>
+          <p>This is a limitation of the Android Operating System and not an issue with the application.</p>
+        </div>
+
+        <div class="alert-actions">
+          <button class="btn-secondary" (click)="summarizeData.android_version = null">Dismiss</button>
+        </div>
+      </div>
+    </div>
+      <!-- Custom Alert Modal -->
+    <div class="alert-overlay" *ngIf="showMeterAlert">
+      <div class="alert-container">
+        <div class="alert-header">
+          <div class="alert-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="m12 17.02.01 0" />
+            </svg>
+          </div>
+          <h3 class="alert-title">Meter Images</h3>
+          <button class="alert-close" (click)="closeMeterAlert()" aria-label="Close alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="alert-content">
+          <p class="alert-description">The following images are uploaded at the start and stop of Attendance:</p>
+          <div style="display: flex;">
+            
+                      <div class="img-container w200" *ngIf="attendanceData.start_meter_image != ''">
+                    <div (click)="goToImage(url + 'attendence/'+ attendanceData.start_meter_image)"
+                      class="image-block wp100">
+                      <img src="{{url+ 'attendence/'+ attendanceData.start_meter_image}}">
+                    </div>
+                    <div style="text-align: center;font-size: 20px;font-weight: 500;background: aliceblue;">{{attendanceData.start_meter_reading}}</div>
+                    <div style="text-align: center;font-size: 20px;font-weight: 500;background: aliceblue;">Start Meter</div>
+                  </div>
+                  <div class="img-container w200" *ngIf="attendanceData.stop_meter_image != ''">
+                    <div (click)="goToImage(url + 'attendence/'+ attendanceData.stop_meter_image)"
+                      class="image-block wp100">
+                      <img src="{{url+ 'attendence/'+ attendanceData.stop_meter_image}}"> 
+                    </div>
+                     <div style="text-align: center;font-size: 20px;font-weight: 500;background: aliceblue;">{{attendanceData.stop_meter_reading}}</div>
+                     <div style="text-align: center;font-size: 20px;font-weight: 500;background: aliceblue;">Stop Meter</div>
+                  </div>
+          </div>
+
+         
+        </div>
+
+        <div class="alert-actions">
+          <button class="btn-secondary" (click)="closeMeterAlert()">Dismiss</button>
+      
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- Tab Navigation && locationMarkers.length > 0-->
+    <div class="tab-navigation-wrapper" *ngIf="!isLoading ">
+      <div class="tab-controls">
+        <div class="fullscreen-toggle">
+          <span class="toggle-label">Full Screen</span>
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="isSidebarVisible">
+            <span class="slider"></span>
+          </label>
+        </div>
+       
+        <button class="refresh-btn" (click)="initializeData()">
+          <i class="material-icons">refresh</i>
+          Refresh
+        </button>
+
+
+      </div>
+      
+
+      <div class="tab-navigation">
+        <button class="tab-button" [class.active]="activeTab === 'liveusers'" (click)="switchTab('liveusers')" *ngIf="isToday()">
+          <i class="material-icons">group</i>
+          <span>Live Users</span>
+        </button>
+        
+        <!-- Show Live tab only for today's date -->
+        <button class="tab-button" [class.active]="activeTab === 'live'" (click)="switchTab('live')" *ngIf="isToday()">
+          <i class="material-icons">podcasts</i>
+          <span>Live Tracking</span>
+        </button>
+
+        <!-- Route tab (previously Live) -->
+        <button class="tab-button" [class.active]="activeTab === 'route'" (click)="switchTab('route')">
+          <i class="material-icons">route</i>
+          <span>Route</span>
+        </button>
+
+        <button class="tab-button" [class.active]="activeTab === 'playback'" (click)="switchTab('playback')">
+          <i class="material-icons">play_circle</i>
+          <span>Playback</span>
+        </button>
+
+        <button class="tab-button" [class.active]="activeTab === 'health'" (click)="switchTab('health')"
+          *ngIf="isToday()">
+          <i class="material-icons">healing</i>
+          <span>Device Health</span>
+        </button>
+        <button class="tab-button" [class.active]="activeTab === 'timeline'" (click)="switchTab('timeline')">
+          <i class="material-icons">timeline</i>
+          <span>Timeline</span>
+        </button>
+
+        <button class="tab-button" [class.active]="activeTab === 'permissions'" (click)="switchTab('permissions')">
+  <i class="material-icons">security</i>
+  <span>Missing Permissions</span>
+</button>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-content-grid" *ngIf="!isLoading">
+
+
+      <!-- Main Map Area -->
+      <main class="map-section"
+        *ngIf="activeTab !== 'permissions' && activeTab !== 'timeline' && activeTab !== 'battery' && activeTab !== 'summary' && activeTab !== 'health' && activeTab !== 'liveusers'">
+        <div class="map-container">
+          <div id="trackingMap" class="tracking-map" *ngIf="locationMarkers.length > 0"></div>
+
+          <!-- Map Controls Overlay -->
+          <div class="map-controls" style="z-index: 400;" *ngIf="oldFlag!=true">
+            <!-- <button class="map-control-btn">
+              <i class="material-icons">my_location</i>
+            </button>
+            <button class="map-control-btn">
+              <i class="material-icons">zoom_in</i>
+            </button>
+            <button class="map-control-btn">
+              <i class="material-icons">zoom_out</i>
+            </button>
+            <button class="map-control-btn">
+              <i class="material-icons">layers</i>
+            </button> -->
+            <div class="fullscreen-toggle snapToRoad" *ngIf="!isToday()">
+              <span class="toggle-label" style="font-size:20px;font-weight:700;">Snap To Road</span>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="snapToRoad" (change)="toggleRoadChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <!-- Wrap your existing snippet with the class below -->
+            <div class="map-info-card" *ngIf="isSidebarVisible">
+              <div class="map-info-name">{{employeeData.name}}</div>
+              <div class="map-info-date">{{selectedDate}}</div>
+            </div>
+
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="playback-controls" style="z-index: 400;" *ngIf="activeTab === 'playback' && !isMapLoading">
+            <div class="playback-left">
+              <button class="control-btn play-btn" *ngIf="playbackStatus === 'paused' || playbackStatus === 'stopped'"
+                (click)="startPlayback()">
+                <i class="material-icons">play_arrow</i>
+              </button>
+              <button class="control-btn pause-btn" *ngIf="playbackStatus === 'playing'" (click)="pausePlayback()">
+                <i class="material-icons">pause</i>
+              </button>
+
+              <div class="playback-info">
+                <span class="playback-time">{{playbackDateTime}}</span>
+                <span class="playback-status">{{playbackStatus}}</span>
+              </div>
+            </div>
+
+            <div class="progress-section">
+              <input type="range" min="0" max="100" [(ngModel)]="playbackProgress" (input)="updateProgress($event)"
+                class="progress-slider">
+            </div>
+
+            <div class="playback-right">
+              <div class="speed-controls">
+                <button class="speed-btn" (click)="toggleSpeedControl()">
+                  <i class="material-icons">speed</i>
+                  <span>{{ playbackDelay/1000 }}x</span>
+                </button>
+
+                <div class="speed-dropdown" *ngIf="showSpeedControl">
+                  <input type="range" min="300" max="5000" step="100" [ngModel]="playbackDelay"
+                    (change)="updateSpeed($event)" class="speed-slider">
+                  <div class="speed-labels">
+                    <span>0.3x</span>
+                    <span>5x</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Loading Overlay -->
+          <div class="loading-overlay" *ngIf="isMapLoading">
+            <!-- <div class="loading-spinner"></div> -->
+            <img style="height: 30%;" src="assets/img/finder.gif" />
+            <p>Loading map data...</p>
+          </div>
+          <div class="loading-overlay" *ngIf="locationMarkers.length==0 && !isMapLoading">
+            <img style="height: 80%;" src="assets/img/noData.ico" />
+            <p>No Data Found</p>
+          </div>
+        </div>
+      </main>
+
+      <!-- Battery Analytics -->
+      <section class="analytics-section" *ngIf="activeTab === 'battery'" style="width:100%">
+        <div class="analytics-card">
+          <div class="card-header">
+            <h3>Battery Consumption Analytics</h3>
+            <div class="header-actions">
+              <button class="action-btn">
+                <i class="material-icons">download</i>
+                Export
+              </button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <div id="analyticsChart" class="chart-wrapper">
+              <a class="zc-ref" href="https://www.zingchart.com/">Powered by ZingChart</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Summary Table -->
+      <section class="summary-section" *ngIf="activeTab === 'summary'">
+        <div class="summary-card">
+          <div class="card-header">
+            <h3>Attendance Summary</h3>
+            <div class="header-actions">
+              <input type="date" [(ngModel)]="selectedDate" (change)="loadAttendanceSummary()" [max]="maxDate"
+                class="date-input-small">
+              <button class="action-btn">
+                <i class="material-icons">download</i>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Activity Type</th>
+                  <th>Check-in Time</th>
+                  <th>Check-out Time</th>
+                  <th>Location</th>
+                  <th>Customer Info</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of attendanceSummary; let i = index">
+                  <td>{{i + 1}}</td>
+                  <td>
+                    <span class="activity-badge">{{record.type}}</span>
+                  </td>
+                  <td>{{getCheckinTime(record) | date:'h:mm a'}}</td>
+                  <td>{{getCheckoutTime(record) | date:'h:mm a'}}</td>
+                  <td class="location-cell">{{record.address || '--'}}</td>
+                  <td>
+                    <div class="customer-info">
+                      <strong>{{record.dr_name}}</strong>
+                      <span class="customer-type">({{record.dr_type_name || '--'}})</span>
+                    </div>
+                  </td>
+                  <td>
+                    <button class="table-action-btn">
+                      <i class="material-icons">visibility</i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="no-data-state" *ngIf="attendanceSummary.length === 0">
+              <i class="material-icons">event_busy</i>
+              <p>No attendance data available for selected date</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Device Health Section -->
+      <section class="device-health-section" *ngIf="activeTab === 'health' && summarizeData">
+        <div class="device-health-card">
+          <div class="card-header">
+            <h3>Device Health Status</h3>
+            <div class="header-info">
+              <span *ngIf="summarizeData.device_model">{{ summarizeData.device_model }} (Android {{
+                summarizeData.android_version }})</span>
+              <span *ngIf="summarizeData.created_at">Last updated: {{ summarizeData.created_at | date:'medium' }}</span>
+            </div>
+          </div>
+
+          <div class="health-content-grid">
+            <!-- Health Score -->
+            <div class="health-score-container">
+              <h4>Health Score</h4>
+              <div class="health-score-circle" [ngClass]="getHealthScoreClass(summarizeData.health_score)">
+                <span class="score">{{ summarizeData.health_score || 'N/A' }}%</span>
+              </div>
+              <p>A measure of device configuration for optimal tracking.</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="key-metrics-container">
+              <h4>Key Metrics</h4>
+              <div class="metrics-grid">
+                <!-- State -->
+                <div class="metric-item">
+                  <i class="material-icons">battery_std</i>
+                  <span class="metric-label">Battery Level</span>
+                  <span class="metric-value">{{ summarizeData.battery_level }}%</span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">wifi</i>
+                  <span class="metric-label">Internet</span>
+                  <span class="metric-value"
+                    [class.ok]="summarizeData.internet_type && summarizeData.internet_type !== 'None' && summarizeData.internet_type !== ''"
+                    [class.issue]="!summarizeData.internet_type || summarizeData.internet_type === 'None' || summarizeData.internet_type === ''">
+                    {{ summarizeData.internet_type || 'None' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">track_changes</i>
+                  <span class="metric-label">Location Accuracy</span>
+                  <span class="metric-value">{{ summarizeData.location_accuracy }}m</span>
+                </div>
+
+                <!-- Settings -->
+                <div class="metric-item">
+                  <i class="material-icons">location_on</i>
+                  <span class="metric-label">Location Services</span>
+                  <span class="metric-value" [class.ok]="summarizeData.is_location_enabled == '1'"
+                    [class.issue]="summarizeData.is_location_enabled != '1'">
+                    {{ summarizeData.is_location_enabled == '1' ? 'On' : 'Off' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">gps_fixed</i>
+                  <span class="metric-label">GPS Provider</span>
+                  <span class="metric-value" [class.ok]="summarizeData.is_gps_enabled == '1'"
+                    [class.issue]="summarizeData.is_gps_enabled != '1'">
+                    {{ summarizeData.is_gps_enabled == '1' ? 'Enabled' : 'Disabled' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">network_cell</i>
+                  <span class="metric-label">Network Provider</span>
+                  <span class="metric-value" [class.ok]="summarizeData.is_network_location_enabled == '1'"
+                    [class.issue]="summarizeData.is_network_location_enabled != '1'">
+                    {{ summarizeData.is_network_location_enabled == '1' ? 'Enabled' : 'Disabled' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">battery_saver</i>
+                  <span class="metric-label">Battery Optimization</span>
+                  <span class="metric-value" [class.ok]="summarizeData.is_battery_optimized == '0'"
+                    [class.issue]="summarizeData.is_battery_optimized != '0'">
+                    {{ summarizeData.is_battery_optimized == '0' ? 'Off' : 'On' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">power_settings_new</i>
+                  <span class="metric-label">Power Saving Mode</span>
+                  <span class="metric-value" [class.ok]="summarizeData.is_power_save_mode == '0'"
+                    [class.issue]="summarizeData.is_power_save_mode != '0'">
+                    {{ summarizeData.is_power_save_mode == '0' ? 'Off' : 'On' }}
+                  </span>
+                </div>
+
+                <!-- Permissions -->
+                <div class="metric-item">
+                  <i class="material-icons">my_location</i>
+                  <span class="metric-label">Fine Location</span>
+                  <span class="metric-value" [class.ok]="summarizeData.fine_location == '1'"
+                    [class.issue]="summarizeData.fine_location != '1'">
+                    {{ summarizeData.fine_location == '1' ? 'Granted' : 'Denied' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">location_searching</i>
+                  <span class="metric-label">Coarse Location</span>
+                  <span class="metric-value" [class.ok]="summarizeData.coarse_location == '1'"
+                    [class.issue]="summarizeData.coarse_location != '1'">
+                    {{ summarizeData.coarse_location == '1' ? 'Granted' : 'Denied' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">security</i>
+                  <span class="metric-label">Background Location</span>
+                  <span class="metric-value" [class.ok]="summarizeData.has_background_permission == '1'"
+                    [class.issue]="summarizeData.has_background_permission != '1'">
+                    {{ summarizeData.has_background_permission == '1' ? 'Granted' : 'Denied' }}
+                  </span>
+                </div>
+                <div class="metric-item">
+                  <i class="material-icons">history_toggle_off</i>
+                  <span class="metric-label">Background Tracking</span>
+                  <span class="metric-value" [class.ok]="summarizeData.can_track_background == '1'"
+                    [class.issue]="summarizeData.can_track_background != '1'">
+                    {{ summarizeData.can_track_background == '1' ? 'Allowed' : 'Blocked' }}
+                  </span>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="issues-recommendations-grid">
+            <!-- Device Issues -->
+            <!-- <div class="list-container issues">
+              <div class="list-header">
+                <i class="material-icons">warning</i>
+                <h4>Detected Issues</h4>
+              </div>
+              <ul>
+                <li *ngFor="let issue of summarizeData.device_issues_array">{{ formatIssueText(issue) }}</li>
+                <li *ngIf="!summarizeData.device_issues_array || summarizeData.device_issues_array.length === 0">No
+                  issues detected.</li>
+              </ul>
+            </div> -->
+
+            <!-- Recommendations -->
+            <!-- <div class="list-container recommendations">
+              <div class="list-header">
+                <i class="material-icons">lightbulb</i>
+                <h4>Recommendations</h4>
+              </div>
+              <ul>
+                <li *ngFor="let rec of summarizeData.recommendations_array">{{ rec }}</li>
+                <li *ngIf="!summarizeData.recommendations_array || summarizeData.recommendations_array.length === 0">
+                  Device is optimally configured.</li>
+              </ul>
+            </div> -->
+          </div>
+        </div>
+      </section>
+      <section class="device-health-section" *ngIf="activeTab === 'health' && !summarizeData">
+        <div class="no-data-state" style="padding-top: 50px; text-align: center;">
+          <i class="material-icons" style="font-size: 48px;">healing</i>
+          <p>No device health data available for the selected user or date.</p>
+        </div>
+      </section>
+
+      <!-- Live Users Tracking Section -->
+      <section class="live-users-section" *ngIf="activeTab === 'liveusers'">
+        <div class="live-users-container">
+          <div class="live-users-sidebar" [class.collapsed]="!showUsersList">
+            <div class="sidebar-header">
+              <h3>Active Users</h3>
+              <div class="toggle-sidebar-btn">
+            
+                <strong style="background: aliceblue;padding:10px;
+                border-radius:10px;">{{liveUsersData.length}}</strong>
+              
+            </div> 
+            </div> 
+            
+
+            <div class="users-list" *ngIf="showUsersList">
+              <div class="user-card" *ngFor="let user of liveUsersData"
+                [class.selected]="selectedLiveUsers.has(user.user.id.toString())"
+                (click)="toggleUserSelection(user.user.id.toString())">
+                <div class="user-avatar">
+                  <i class="material-icons">person</i>
+                  <span class="status-indicator" [class.active]="user.movement.is_moving"></span>
+                </div>
+                <div class="user-details">
+                  <h4>{{user.user.name || 'Unknown'}}</h4>
+                  <p class="user-id">ID: {{user.user.employee_id || 'N/A'}}</p>
+                  <div class="user-stats">
+                    <span class="stat-item">
+                      <i class="material-icons">battery_std</i>
+                      {{user.device.battery_level}}%
+                    </span>
+                   
+                  </div>
+                  <div class="user-activity">
+                    <span class="activity-badge" [class]="user.movement.activity">
+                      {{user.movement.activity || 'unknown'}}
+                    </span>
+                  </div>
+                
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="sidebar-summary" *ngIf="showUsersList">
+              <div class="summary-item">
+                <span>Total Users:</span>
+                <strong>{{liveUsersData.length}}</strong>
+              </div>
+              <div class="summary-item">
+                <span>Active:</span>
+                <strong>{{getActiveUsersCount()}}</strong>
+              </div>
+              <div class="summary-item">
+                <span>Selected:</span>
+                <strong>{{selectedLiveUsers.size}}</strong>
+              </div>
+            </div> -->
+          </div>
+
+          <div class="live-users-map-container">
+            <div id="liveUsersMap" class="live-users-map"></div>
+
+            <!-- Map Controls -->
+            <div class="live-map-controls-btn">
+             
+              <button class="control-btn-live" (click)="refreshLiveUsers()">
+                <i class="material-icons">refresh</i>
+                Refresh
+              </button>
+             
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-overlay" *ngIf="isLoadingLiveUsers">
+              <div class="loading-spinner"></div>
+              <p>Loading live users data...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div *ngIf="activeTab === 'testing'" class="testing-tab-content">
+        <div class="polyline-input-container">
+          <h3>Plot Encoded Polyline</h3>
+          <textarea [(ngModel)]="testPolyline" placeholder="Enter encoded polyline here" rows="6"></textarea>
+          <button class="plot-button" (click)="plotTestPolyline()">Plot Polyline</button>
+        </div>
+        <div id="testMapContainer" style="height: 600px; width: 100%; border-radius: 8px; margin-top: 16px;"></div>
+      </div>
+      
+      
+      <!-- Timeline Section -->
+      <section class="timeline-section" *ngIf="activeTab === 'timeline'">
+        <div class="timeline-container" *ngIf="timelineEvents.length > 0">
+          <div class="timeline-header">
+            <h2>Daily Activity Timeline</h2>
+            <div class="timeline-stats">
+              <span class="stat-item">
+                <i class="material-icons">event</i>
+                {{timelineEvents.length}} Events
+              </span>
+             
+              <span class="stat-item">
+                <i class="material-icons">timer</i>
+                {{timelineData.analytics?.total_travel_time || 0}} mins
+              </span>
+            </div>
+            <!-- Map Toggle Button -->
+            <button class="map-toggle-btn" (click)="toggleTimelineMap()" [class.active]="showTimelineMap">
+              <i class="material-icons">{{showTimelineMap ? 'map' : 'view_list'}}</i>
+              {{showTimelineMap ? 'Hide Map' : 'Show Map'}}
+            </button>
+          </div>
+
+          <div class="timeline-content" [class.with-map]="showTimelineMap">
+            <!-- Map View (conditionally shown) -->
+            <div class="timeline-map-panel" *ngIf="showTimelineMap">
+              <div id="timelineMapView" class="timeline-map-view"></div>
+            </div>
+
+            <!-- Timeline List (hidden when map is shown) -->
+            <div class="timeline-track" *ngIf="!showTimelineMap">
+              <div class="timeline-event" *ngFor="let event of timelineEvents; let i = index">
+                <div class="timeline-time">{{event.time}}</div>
+
+                <div class="timeline-marker" [ngClass]="getTimelineEventClass(event.type)">
+                  <i class="material-icons">{{getTimelineIcon(event.type)}}</i>
+                </div>
+
+                <div class="timeline-card" [ngClass]="getTimelineEventClass(event.type)">
+                  <h4>{{ event.type === 'visit' ? event.visit_count + ' . Visit : ' + event.title : event.title }}</h4>
+                  <p class="event-description">{{event.description}}</p>
+                  <!-- Enhanced Order Amount Display -->
+                  <div *ngIf="event.order_amount > 0" class="event-order-amount">
+                    <i class="material-icons">shopping_cart</i>
+                    <span>Order Amount: {{ event.order_amount | currency:'INR':'symbol':'1.2-2' }}</span>
+                  </div>
+
+                  <div class="event-details" *ngIf="event.type === 'travel'">
+                    <span><i class="material-icons">schedule</i> {{event.duration_minutes}} mins</span>
+                    <span><i class="material-icons">speed</i> {{event.avg_speed_kmh}} km/h</span>
+                  </div>
+
+                  <div class="event-location" *ngIf="event.location">
+                    <i class="material-icons">location_on</i>
+                    <span>{{event.location.address || 'Location'}}</span>
+                  </div>
+                </div>
+
+                <div class="timeline-gap" *ngIf="hasTimelineGap(i)">
+                  <div class="gap-indicator">
+                    <i class="material-icons">warning</i>
+                    <span>Gap: {{getGapDuration(i)}} mins</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline Insights Panel -->
+            <!-- <div class="timeline-insights-panel" *ngIf="!showTimelineMap && timelineInsights">
+              <div class="list-container summary" *ngIf="timelineInsights.summary?.length > 0">
+                <div class="list-header">
+                  <i class="material-icons">summarize</i>
+                  <h4>Summary</h4>
+                </div>
+                <ul>
+                  <li *ngFor="let item of timelineInsights.summary">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div class="list-container recommendations" *ngIf="timelineInsights.recommendations?.length > 0">
+                <div class="list-header">
+                  <i class="material-icons">lightbulb</i>
+                  <h4>Recommendations</h4>
+                </div>
+                <ul>
+                  <li *ngFor="let item of timelineInsights.recommendations">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div class="list-container patterns" *ngIf="timelineInsights.patterns?.length > 0">
+                <div class="list-header">
+                  <i class="material-icons">insights</i>
+                  <h4>Patterns</h4>
+                </div>
+                <ul>
+                  <li *ngFor="let item of timelineInsights.patterns">{{ item }}</li>
+                </ul>
+              </div>
+            </div> -->
+
+          </div>
+        </div>
+         <div class="timeline-container map-container" *ngIf="timelineEvents.length <=0">
+      <div class="loading-overlay">
+            <img style="height: 80%;" src="assets/img/noData.ico" />
+            <p>No Data Found</p>
+          </div>
+         </div>
+      </section>
+
+
+      <!-- Permissions Report Section -->
+<section class="permissions-section" *ngIf="activeTab === 'permissions'">
+  <div class="permissions-container">
+    <div class="permissions-header">
+      <h2>Missing Device Permissions Report</h2>
+
+      <div style="display: flex;gap: 10px;">
+        <button class="action-btn" (click)="downloadPermissionsReport()">
+         
+                <i class="material-icons">download</i>
+                Export
+              </button>
+           
+      <div class="date-info">
+        <span>{{selectedDate | date:'fullDate'}}</span>
+      </div>
+      </div>
+      
+              
+    </div>    <div class="permissions-layout" *ngIf="permissionsList.length > 0">
+      <!-- Android Version Warning -->
+      <div class="alert-container" *ngIf="summarizeData?.android_version && +summarizeData.android_version <= 12" style="margin-bottom: 1rem; border: 1px solid #ffc107; border-radius: 8px;">
+        <div class="alert-header" style="background-color: #ffc107; border-top-left-radius: 7px; border-top-right-radius: 7px;">
+          <div class="alert-icon" style="color: #212529;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="m12 17.02.01 0" />
+            </svg>
+          </div>
+          <h3 class="alert-title" style="color: #212529;">Android Version Disclaimer</h3>
+        </div>
+        <div class="alert-content">
+          <p class="alert-description">
+            This device is running <strong>Android {{summarizeData.android_version}}</strong>. For Android versions 12 and below, Google may restrict background location access, which can affect live tracking accuracy. This is a limitation of the Android Operating System and not an issue with the application.
+          </p>
+        </div>
+      </div>
+
+      <!-- Modern Hourly Timeline Sidebar -->
+      <div class="hourly-sidebar">
+        <h3>Hourly Timeline</h3>
+        <div class="hours-list">
+          <div class="hour-item" 
+               *ngFor="let hour of getHoursList()"
+               [class.active]="selectedHour === hour"
+               (click)="selectHour(hour)">
+            
+            <div class="hour-header">
+              <span class="hour-time">{{hour}}</span>
+              <span class="hour-count">{{getHourlyStatuses(hour).total}}</span>
+            </div>
+            
+            <div class="hour-battery">
+              <i class="material-icons" [style.color]="getBatteryColor(getHourlyStatuses(hour).avgBattery)">
+                {{getBatteryIcon(getHourlyStatuses(hour).avgBattery)}}
+              </i>
+              <span class="battery-level">{{getHourlyStatuses(hour).avgBattery}}%</span>
+            </div>
+            
+            <div class="hour-issues">
+              <span class="issues-count" [class.critical]="getHourlyStatuses(hour).criticalIssues > 0">
+                {{getHourlyStatuses(hour).totalIssues}} issues
+              </span>
+             
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern Details Panel -->
+      <div class="permissions-details">
+        <div class="details-header">
+          <h3>Device Status at {{selectedHour}}</h3>
+          <div class="hour-summary">
+            <div class="summary-badge total">
+              <i class="material-icons">assessment</i>
+              <span>{{getHourlyStatuses(selectedHour).total}} Records</span>
+            </div>
+            <div class="summary-badge" 
+                 [ngClass]="getHourlyStatuses(selectedHour).batteryStatus">
+              <i class="material-icons">{{getBatteryIcon(getHourlyStatuses(selectedHour).avgBattery)}}</i>
+              <span>{{getHourlyStatuses(selectedHour).avgBattery}}% Battery</span>
+            </div>
+            <div class="summary-badge issues" 
+                 [class.critical]="getHourlyStatuses(selectedHour).criticalIssues > 0">
+              <i class="material-icons">{{getHourlyStatuses(selectedHour).criticalIssues > 0 ? 'error' : 'check_circle'}}</i>
+              <span>{{getHourlyStatuses(selectedHour).totalIssues}} Issues</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="issues-timeline">
+          <div class="issue-record" 
+               *ngFor="let record of getSelectedHourPermissions(); let i = index"
+               [class.critical]="isCritical(record)">
+            
+            <div class="record-time">
+              <span class="time">{{record.timestamp | date:'HH:mm:ss'}}</span>
+            </div>
+            
+            <div class="record-battery">
+              <div class="battery-info">
+                <i class="material-icons" [style.color]="getBatteryColor(record.battery_level)">
+                  {{getBatteryIcon(record.battery_level)}}
+                </i>
+                <span class="battery-text" [style.color]="getBatteryColor(record.battery_level)">
+                  {{record.battery_level}}%
+                </span>
+              </div>
+            </div>
+            
+            <div class="record-issues">
+              <div class="issues-container" *ngIf="record.issues && record.issues.length > 0; else noIssues">
+                <div class="issue-chip red" *ngFor="let issue of record.issues" >
+                  <i class="material-icons">{{getIssueIcon(issue)}}</i>
+                  <span>{{formatIssueText(issue)}}</span>
+                </div>
+              </div>
+              
+              <ng-template #noIssues>
+                <div class="no-issues">
+                  <i class="material-icons good">check_circle</i>
+                  <span>No Issues Detected</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <!-- No data for selected hour -->
+        <div class="no-hour-data" *ngIf="getSelectedHourPermissions().length === 0">
+          <i class="material-icons">schedule</i>
+          <p>No device status recorded at {{selectedHour}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modern No data state -->
+    <div class="no-permissions-data" *ngIf="permissionsList.length === 0">
+      <i class="material-icons">devices_other</i>
+      <h3>No Device Data Available</h3>
+      <p>No device status information found for the selected date and user. Please check your filters or try a different date range.</p>
+    </div>
+  </div>
+</section>
+
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-skeleton" *ngIf="isLoading">
+      <div class="skeleton-header"></div>
+      <div class="skeleton-kpis"></div>
+      <div class="skeleton-content">
+        <div class="skeleton-sidebar"></div>
+        <div class="skeleton-main"></div>
+      </div>
+    </div>
+  </div>
+</div>
+`,
+        styles: [`
+ body {
+  
+  background: #f8faff;
+  color: #1e293b;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+.glow-route {
+  filter: drop-shadow(0 0 6px #2196F3);
+}
+/* ===== MAIN CONTAINER ===== */
+.main-container {
+  min-height: 100vh;
+  // background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+  display: flex;
+  flex-direction: column;
+
+}
+
+/* ===== MAP INFO CARD ===== */
+.map-info-card {
+
+  z-index: 1000;
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.05);
+
+  padding: 10px 14px;
+  min-width: 160px;
+  max-width: 240px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  pointer-events: auto; /* set to none if you want map clicks to pass through */
+ 
+}
+
+
+::ng-deep .live-marker-pulse {
+  animation: pulse 2s infinite;
+  
+  img {
+    filter: drop-shadow(0 0 6px rgba(33, 150, 243, 0.6));
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.8));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* Text inside */
+.map-info-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.map-info-date {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+
+
+.blinking-red{
+  color: #fff !important;
+  animation: blink-animation 1.2s infinite ease-in-out;
+  background: linear-gradient(135deg, #ff4d4d, #b30000);
+  padding:5px;
+  border: 1px solid #ff1a1a;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px !important;
+  box-shadow: 0 3px 8px rgba(255, 0, 0, 0.3);
+  text-align: center;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+/* Blinking animation */
+@keyframes blink-animation {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+
+
+.location-tracker-container {
+  width: 100%;
+  max-width: 95vw;
+  margin: 0 auto;
+  padding: clamp(8px, 1vw, 16px);
+  padding-top: 0;
+  flex: 1;
+}
+
+/* This can replace the .charging-green class */
+
+.charging-fill-effect {
+  position: relative;
+  /* This orange should match the background of the .kpi-icon-orange class */
+  background-color: #ff9800; 
+  overflow: hidden; /* This is crucial to contain the animation */
+}
+
+.charging-fill-effect::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #28a745; /* Green charging color */
+  
+  /* The animation makes the green layer move up and down */
+  animation: charge-fill-animation 2.5s infinite ease-in-out;
+}
+
+@keyframes charge-fill-animation {
+  0% {
+    transform: translateY(100%); /* Start at the bottom (icon is orange) */
+  }
+  50% {
+    transform: translateY(0%); /* Fill to the top (icon is green) */
+  }
+  100% {
+    transform: translateY(100%); /* Recede to the bottom (back to orange) */
+  }
+}
+
+
+/* Switch Component */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 24px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background:linear-gradient(135deg, #10b981, #059669);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+/* ===== KPI GRID ===== */
+/* ===== EMPLOYEE CARD - COMPACT VERSION ===== */
+.employee-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.employee-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 0;
+}
+
+.employee-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.employee-avatar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+}
+
+.employee-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.employee-details h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.employee-details p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.employee-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.employee-meta-item i {
+  font-size: 12px !important;
+}
+
+/* User Selection - Compact under employee name */
+.user-selection {
+  background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  /* Aligned under employee name */
+  
+  max-width: 500px; /* Limit width to keep compact */
+}
+// Live Users Section Styles
+.live-users-section {
+  width: 100%;
+  
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.live-users-container {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.live-users-sidebar {
+  width: 320px;
+  background: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  max-height: 650px;
+  
+  &.collapsed {
+    width: 50px;
+  }
+}
+
+.sidebar-header {
+  padding: 20px;
+  background: white;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+  }
+}
+
+.toggle-sidebar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  
+  &:hover {
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+}
+
+.users-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.user-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  gap: 15px;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  &.selected {
+    background: #e3f2fd;
+    border: 2px solid #2196F3;
+  }
+}
+
+.user-avatar {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  
+  .status-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #9E9E9E;
+    border: 2px solid white;
+    
+    &.active {
+      background: #4CAF50;
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+.user-details {
+  flex: 1;
+  
+  h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .user-id {
+    margin: 0 0 8px 0;
+    color: #666;
+    font-size: 12px;
+  }
+}
+
+.user-stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #666;
+    
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+.user-activity {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.activity-badge,
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.activity-badge {
+  &.still {
+    background: #e0e0e0;
+    color: #666;
+  }
+  &.walking {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+  &.running {
+    background: #fce4ec;
+    color: #c2185b;
+  }
+  &.driving {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+}
+
+.status-badge {
+  &.stationary {
+    background: #c8e6c9;
+    color: #2e7d32;
+  }
+  &.idle {
+    background: #ffe0b2;
+    color: #e65100;
+  }
+  &.moving {
+    background: #bbdefb;
+    color: #1565c0;
+  }
+}
+
+.last-update {
+  margin: 0;
+  font-size: 11px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  i {
+    font-size: 14px;
+  }
+}
+
+.sidebar-summary {
+  padding: 15px 20px;
+  background: white;
+  border-top: 1px solid #dee2e6;
+  
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    
+    span {
+      color: #666;
+    }
+    
+    strong {
+      color: #333;
+    }
+  }
+}
+
+.live-users-map-container {
+  flex: 1;
+  position: relative;
+}
+
+.live-users-map {
+  width: 100%;
+  height: 100%;
+}
+
+.live-map-controls-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
+  .control-btn-live {
+    background: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    i {
+      font-size: 20px;
+      color: #666;
+    }
+  }
+}
+
+.auto-refresh-toggle {
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  span {
+    font-size: 13px;
+    color: #666;
+  }
+}
+
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-container label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-input-small,
+.user-dropdown {
+  padding: 6px 8px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  height: 32px; /* Fixed height for consistency */
+}
+
+.date-input-small:focus,
+.user-dropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.user-dropdown:disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  width: 100%;
+}
+
+.loading-spinner-small {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== KPI GRID - 4 CARDS IN ONE LINE ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.kpi-card {
+  background: white;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: default;
+  min-width: 0; /* Allow cards to shrink */
+}
+.kpi-toggle-card {
+  cursor: pointer;
+  background: #f8fafc;
+  border-style: dashed;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-card.clickable {
+  cursor: pointer;
+}
+
+.kpi-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpi-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kpi-subtitle {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.kpi-subtitle.blinking-red {
+  color: #ef4444;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+.kpi-subtitle.clickable-subtitle {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.kpi-icon i {
+  font-size: 18px;
+}
+
+.kpi-icon-blue { 
+  background: linear-gradient(135deg, #3b82f6, #1e40af); 
+}
+
+.kpi-icon-green { 
+  background: linear-gradient(135deg, #10b981, #059669); 
+}
+
+.kpi-icon-purple { 
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed); 
+}
+
+.kpi-icon-orange { 
+  background: linear-gradient(135deg, #f59e0b, #d97706); 
+}
+
+.charging-fill-effect {
+  background: linear-gradient(135deg, #10b981, #059669);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); 
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); 
+  }
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Large Tablet */
+@media screen and (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  
+  .kpi-card {
+    padding: 12px;
+  }
+  
+  .kpi-value {
+    font-size: 16px;
+  }
+  
+  .kpi-label {
+    font-size: 10px;
+  }
+  
+  .kpi-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .kpi-icon i {
+    font-size: 16px;
+  }
+}
+
+/* Tablet View */
+@media screen and (max-width: 768px) {
+  .employee-card {
+    padding: 14px;
+  }
+  
+  .employee-header {
+    gap: 12px;
+  }
+  
+  .employee-avatar {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .employee-avatar i {
+    font-size: 20px;
+  }
+  
+  .employee-details h3 {
+    font-size: 16px;
+  }
+  
+  .user-selection {
+    margin-left: 60px; /* 48px avatar + 12px gap */
+    padding: 8px;
+    max-width: 400px;
+  }
+  
+  .dropdown-container label {
+    font-size: 9px;
+  }
+  
+  .date-input-small,
+  .user-dropdown {
+    padding: 5px 7px;
+    font-size: 11px;
+    height: 28px;
+  }
+  
+  /* Keep 4 columns but smaller */
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .kpi-card {
+    padding: 10px;
+  }
+  
+  .kpi-value {
+    font-size: 14px;
+  }
+  
+  .kpi-label {
+    font-size: 9px;
+  }
+  
+  .kpi-subtitle {
+    font-size: 9px;
+  }
+  
+  .kpi-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .kpi-icon i {
+    font-size: 14px;
+  }
+}
+
+/* Mobile View */
+@media screen and (max-width: 580px) {
+  /* Stack dropdowns vertically on mobile */
+  .user-selection {
+    margin-left: 0;
+    margin-top: 12px;
+    flex-direction: column;
+    max-width: 100%;
+  }
+  
+  /* 2x2 grid on mobile */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .kpi-card {
+    padding: 10px;
+  }
+  
+  .kpi-value {
+    font-size: 16px;
+  }
+  
+  .kpi-label {
+    font-size: 10px;
+  }
+}
+
+/* Very small devices */
+@media screen and (max-width: 360px) {
+  .employee-card {
+    padding: 10px;
+  }
+  
+  .employee-avatar {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .employee-details h3 {
+    font-size: 14px;
+  }
+  
+  .employee-meta-item {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  
+  .date-input-small,
+  .user-dropdown {
+    font-size: 10px;
+    height: 26px;
+  }
+  
+  /* Single column on very small screens */
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .kpi-card {
+    padding: 10px;
+  }
+  
+  .kpi-value {
+    font-size: 16px;
+  }
+}
+
+
+.loading-spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .employee-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .employee-status {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 12px;
+  }
+  
+  .user-selection {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .employee-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .employee-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 0 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-item:last-child {
+  border-right: none;
+}
+
+.stat-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.stat-label {
+  font-size: 10px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Timeline Container */
+.timeline-container {
+
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.timeline-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 14px;
+}
+
+.timeline-marker.checkin {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.timeline-marker.checkout {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.timeline-marker.attendance {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.timeline-marker.background {
+  background: linear-gradient(135deg, #64748b, #475569);
+}
+
+.timeline-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  border-radius:10px
+}
+
+.timeline-header h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.timeline-time {
+  font-size: 11px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.timeline-address {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.timeline-coords {
+  font-size: 10px;
+  color: #94a3b8;
+ 
+}
+.timeline-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.timeline-map-panel {
+  width: 50%;
+  position: relative;
+  border-right: 1px solid #dee2e6;
+}
+
+.timeline-map-view {
+  width: 100%;
+  height: 100%;
+}
+
+.timeline-track {
+  width: 30%;
+  padding: 30px;
+  overflow-y: auto;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 70px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+  }
+}
+
+.timeline-summary {
+  width: 20%;
+  background: #f8f9fa;
+  padding: 20px;
+  border-left: 1px solid #dee2e6;
+  overflow-y: auto;
+}
+.map-toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  margin-top: 15px;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  &.active {
+    background: white;
+    color: #764ba2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  i {
+    font-size: 20px;
+  }
+}
+
+.timeline-content {
+  &.with-map {
+    .timeline-map-panel {
+      width: 100%;
+      height: clamp(600px, 50vh, 600px);
+    }
+  }
+}
+
+.timeline-map-panel {
+  height: 100%;
+  position: relative;
+}
+
+.timeline-map-view {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+/* Last Location Card */
+.last-location-card {
+  padding: 14px 16px;
+  border-top: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+}
+
+.location-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.location-header i {
+  color: #d97706;
+  font-size: 16px;
+}
+
+.location-header h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+  margin: 0;
+}
+
+.location-details .location-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+  margin-bottom: 4px;
+}
+
+.location-details .location-address {
+  font-size: 12px;
+  color: #92400e;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.location-details .location-coords {
+  font-size: 10px;
+  color: #a16207;
+  
+}
+
+/* No Data State */
+.no-data-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.no-data-state i {
+  font-size: 250px;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.no-data-state p {
+  font-size: 25px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ===== MAP SECTION ===== */
+.map-section {
+  position: relative;
+  flex: 1;
+  min-width: 320px;
+}
+
+.map-container {
+  position: relative;
+  background: white;
+  border-radius: clamp(10px, 1.2vw, 16px);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  height: clamp(100vh, 50vh, 600px);
+  display: flex;
+  flex-direction: column;
+}
+
+.tracking-map {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: clamp(12px, 1.5vw, 16px);
+  flex: 1;
+}
+
+/* Map Controls */
+.map-controls {
+  position: absolute;
+  top: clamp(10px, 1.5vw, 20px);
+  right: clamp(10px, 1.5vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vw, 8px);
+  z-index: 10;
+}
+
+.map-control-btn {
+  width: clamp(28px, 3.5vw, 44px);
+  height: clamp(28px, 3.5vw, 44px);
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: clamp(6px, 1vw, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+  font-size: clamp(12px, 1.4vw, 16px);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .main-content-grid {
+    flex-direction: column;
+  }
+  
+  .sidebar-panel {
+    flex: none;
+    order: 2;
+  }
+  
+  .map-section {
+    order: 1;
+  }
+  
+  .tab-navigation-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tab-controls {
+    justify-content: center;
+  }
+  
+  .playback-controls {
+    flex-direction: column;
+    gap: clamp(8px, 2vw, 16px);
+  }
+  
+  .progress-section {
+    margin: 0;
+    order: 2;
+  }
+  
+  .playback-left {
+    order: 1;
+    justify-content: center;
+  }
+  
+  .playback-right {
+    order: 3;
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    flex-direction: column;
+  }
+  
+  .kpi-card {
+    flex: none;
+  }
+  
+  .employee-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .employee-status {
+    text-align: center;
+  }
+  
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .timeline-time {
+    align-self: flex-end;
+  }
+}
+
+.map-control-btn:hover {
+  background: #f8fafc;
+  color: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Playback Controls */
+.playback-controls {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.playback-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-size: 16px;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.pause-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.control-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.playback-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.playback-time {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.playback-status {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-section {
+  flex: 1;
+  margin: 0 14px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #e2e8f0;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.progress-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.playback-right {
+  position: relative;
+}
+
+.speed-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.speed-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.checkin-event-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #e8eaf6; /* A light indigo background */
+  color: #3f51b5; /* A matching indigo text color */
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  float: right; /* Aligns it to the right */
+}
+
+.checkin-event-duration .material-icons {
+  font-size: 14px;
+}
+
+
+.speed-dropdown {
+  position: absolute;
+  bottom: 48px;
+  right: 0;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  min-width: 130px;
+}
+
+.speed-slider {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: #e2e8f0;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-bottom: 6px;
+}
+
+.speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  cursor: pointer;
+}
+
+.speed-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #64748b;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: 14px;
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #f1f5f9;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+  font-size: 30px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* ===== ANALYTICS SECTION ===== */
+.analytics-section,
+.summary-section {
+  grid-column: 1 / -1;
+}
+
+.analytics-card,
+.summary-card {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #f8faff, #f1f5ff);
+}
+
+.card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* Chart Container */
+.chart-container {
+  padding: 16px;
+}
+
+.chart-wrapper {
+  height: 300px;
+  background: #f8faff;
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+}
+
+.zc-ref {
+  display: none;
+}
+
+/* ===== SUMMARY TABLE ===== */
+.table-container {
+  overflow-x: auto;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table th {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  color: white;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-table th:first-child {
+  border-top-left-radius: 0;
+}
+
+.summary-table th:last-child {
+  border-top-right-radius: 0;
+}
+
+.summary-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.summary-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.activity-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.location-cell {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.customer-type {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.table-action-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.table-action-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ===== LOADING SKELETON ===== */
+.loading-skeleton {
+  animation: fadeIn 0.3s ease;
+}
+
+.skeleton-header,
+.skeleton-kpis,
+.skeleton-sidebar,
+.skeleton-main {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 14px;
+}
+
+.skeleton-header {
+  height: 70px;
+  margin-bottom: 16px;
+}
+
+.skeleton-kpis {
+  height: 90px;
+  margin-bottom: 16px;
+}
+
+.skeleton-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+}
+
+.skeleton-sidebar {
+  height: 450px;
+}
+
+.skeleton-main {
+  height: 450px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.timeline-container::-webkit-scrollbar,
+.table-container::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.timeline-container::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.text-center { text-align: center; }
+.hidden { display: none !important; }
+.sr-only { 
+  position: absolute; 
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip: rect(0, 0, 0, 0); 
+  border: 0; 
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.last-ping {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* ===== TAB NAVIGATION ===== */
+.tab-navigation-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 14px;
+}
+
+.tab-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fullscreen-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+}
+
+.tab-navigation {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
+}
+
+.tab-button:hover:not(.active) {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+/* ===== MAIN CONTENT GRID ===== */
+.main-content-grid {
+  display: flex;
+  gap: clamp(12px, 2vw, 24px);
+  min-height: clamp(400px, 50vh, 600px);
+  flex-wrap: wrap;
+}
+
+/* ===== SIDEBAR PANEL ===== */
+.sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 clamp(280px, 25vw, 360px);
+  min-width: 280px;
+}
+
+.panel-card {
+  background: white;
+  border-radius: clamp(10px, 1.2vw, 16px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  height: fit-content;
+  flex: 1;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(12px, 1.5vw, 20px);
+  border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #f8faff, #f1f5ff);
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 16px);
+}
+
+.panel-header h3 {
+  font-size: clamp(12px, 1.4vw, 16px);
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.date-input-small {
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 15px;
+  font-size: 15px;
+  color: #1e293b;
+  background: white;
+  cursor: pointer;
+}
+
+.date-input-small:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Quick Stats */
+.quick-stats {
+  display: flex;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+}
+
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add this to your map.component.scss file */
+
+.route-arrow {
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.route-arrow div {
+  transition: transform 0.3s ease;
+}
+
+/* Animation for dashed line effect */
+@keyframes dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 30;
+  }
+}
+
+/* Enhanced playback marker styles */
+.playback-marker {
+  z-index: 1001;
+}
+
+.playback-marker div {
+  transition: transform 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+  50% {
+    box-shadow: 0 3px 15px rgba(255,87,34,0.6);
+  }
+  100% {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+}
+
+/* Custom marker styles */
+.custom-marker {
+  z-index: 999;
+}
+
+.current-location-marker {
+  z-index: 1002;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.snapToRoad {
+  padding: 12px 18px;
+  border: 1px solid rgba(30, 64, 175, 0.6);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+
+  /* Subtle depth */
+  box-shadow: 0 6px 15px rgba(30, 64, 175, 0.25), 
+              inset 0 1px 2px rgba(255, 255, 255, 0.15);
+
+  /* Smooth hover effect */
+  transition: all 0.3s ease;
+}
+
+.snapToRoad:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.35);
+  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+}
+
+.snapToRoad:active {
+  transform: scale(0.98);
+}
+  
+/* Device Health Section */
+.device-health-section {
+
+  padding: 20px;
+  background-color: #f9fafb;
+  width: 100%;
+}
+ .header-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+.device-health-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 16px;
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+  }
+}
+
+.health-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.health-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 16px;
+  }
+
+  .health-score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    border-width: 8px;
+    border-style: solid;
+    transition: all 0.3s ease;
+
+    &.score-good {
+      border-color: #22c55e;
+      color: #166534;
+    }
+    &.score-medium {
+      border-color: #f59e0b;
+      color: #92400e;
+    }
+    &.score-poor {
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .score {
+      font-size: 2.25rem;
+      font-weight: 700;
+    }
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    max-width: 200px;
+  }
+}
+
+.key-metrics-container {
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 16px;
+  }
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.metric-item {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+
+  .material-icons {
+    font-size: 2rem;
+    color: #4b5563;
+  }
+
+  .metric-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .metric-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+
+    &.ok {
+      color: #16a34a;
+    }
+    &.issue {
+      color: #dc2626;
+    }
+  }
+}
+
+.alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+/* Alert Container */
+.alert-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: alertSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Alert Header */
+.alert-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px 24px 0 24px;
+  position: relative;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #92400e;
+}
+
+.alert-title {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+  padding-top: 8px;
+}
+
+.alert-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alert-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Alert Content */
+.alert-content {
+  padding: 20px 24px 0 24px;
+}
+
+.alert-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+}
+
+/* Issues List */
+.issues-list {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 4px;
+}
+
+.issue-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.issue-item:last-child {
+  margin-bottom: 0;
+}
+
+.issue-bullet {
+  width: 6px;
+  height: 6px;
+  background: #f59e0b;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.issue-text {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Alert Actions */
+.alert-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 10px;
+  background: #fafafa;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Buttons */
+.btn-secondary,
+.btn-primary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 80px;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+.timeline-section {
+  width: 100%;
+
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.timeline-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-header {
+  padding: 20px;
+ background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+   color: white;
+   border-radius: 10px;
+  
+  h2 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+  }
+}
+
+.timeline-stats {
+  display: flex;
+  gap: 30px;
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    i {
+      font-size: 18px;
+    }
+  }
+}
+
+.timeline-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.timeline-track {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 70px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+  }
+}
+
+.timeline-event {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.timeline-time {
+  width: 60px;
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  padding-top: 12px;
+}
+
+.timeline-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px;
+  z-index: 1;
+  position: relative;
+  
+  &.event-start {
+    background: #4CAF50;
+    color: white;
+  }
+  
+  &.event-stop {
+    background: #f44336;
+    color: white;
+  }
+  
+  &.event-travel {
+    background: #2196F3;
+    color: white;
+  }
+    &.event-checkin {
+    background: #ea24e3;
+    color: white;
+  }
+  
+  &.event-visit {
+    background: #9C27B0;
+    color: white;
+  }
+  
+  i {
+    font-size: 20px;
+  }
+}
+
+.timeline-card {
+  flex: 1;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+  
+  .event-description {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Add this to your map.component.scss file
+
+.event-order-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #e8f5e9; // A light green background
+  color: #2e7d32; // A dark green text color
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #c8e6c9;
+
+  .material-icons {
+    font-size: 20px;
+  }
+}
+
+
+.event-details {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #666;
+    
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+.event-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #666;
+  
+  i {
+    font-size: 16px;
+  }
+}
+
+.timeline-gap {
+  position: absolute;
+  left: 70px;
+  top: 60px;
+  
+  .gap-indicator {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 20px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    i {
+      color: #ff9800;
+      font-size: 16px;
+    }
+    
+    span {
+      font-size: 12px;
+      color: #856404;
+    }
+  }
+}
+
+.timeline-summary {
+  width: 350px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-left: 1px solid #dee2e6; 
+  overflow-y: auto;
+  
+  h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+  }
+}
+
+.timeline-insights-panel {
+  width: 400px;
+  background-color: #f9fafb;
+  border-left: 1px solid #e5e7eb;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .list-container {
+    background-color: transparent;
+    padding: 0;
+
+    &.summary ul li { border-color: #3b82f6; }
+    &.recommendations ul li { border-color: #10b981; }
+    &.patterns ul li { border-color: #f59e0b; }
+
+    .list-header {
+      .material-icons {
+        font-size: 1.75rem;
+      }
+    }
+    
+    &.summary .list-header { color: #3b82f6; }
+    &.recommendations .list-header { color: #10b981; }
+    &.patterns .list-header { color: #f59e0b; }
+  }
+
+  .no-insights-text {
+    font-size: 0.9rem;
+    color: #6b7280;
+    padding: 12px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    text-align: center;
+  }
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.user-search {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 4px;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+}
+
+.dropdown-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover,
+.dropdown-list li.selected {
+  background: #f3f4f6;
+}
+
+
+.summary-grid {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  
+  i {
+    color: #666;
+  }
+  
+  span {
+    font-size: 14px;
+    color: #333;
+  }
+}
+
+.gaps-section {
+  h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+  }
+}
+
+.gap-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #fff3cd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  
+  .gap-time {
+    font-weight: 600;
+    color: #856404;
+  }
+  
+  .gap-duration {
+    color: #856404;
+    font-size: 14px;
+  }
+}
+
+/* Animations */
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .alert-container {
+    margin: 16px;
+    max-width: none;
+    border-radius: 12px;
+  }
+  
+  .alert-header {
+    padding: 20px 20px 0 20px;
+  }
+  
+  .alert-content {
+    padding: 16px 20px 0 20px;
+  }
+  
+  .alert-actions {
+    padding: 8px;
+    flex-direction: column-reverse;
+  }
+  
+  .btn-secondary,
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .alert-title {
+    font-size: 18px;
+  }
+}
+
+
+
+.issues-recommendations-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.list-container {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 20px;
+
+  .list-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: #374151;
+
+    .material-icons {
+      font-size: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  &.issues {
+    .list-header {
+      color: #d97706; // amber-600
+    }
+  }
+  &.recommendations {
+    .list-header {
+      color: #1d4ed8; // blue-700
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    li {
+      background-color: #ffffff;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 4px solid;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+  }
+
+  &.issues ul li {
+    border-color: #f59e0b; // amber-500
+  }
+  &.recommendations ul li {
+    border-color: #3b82f6; // blue-500
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 992px) {
+  .health-content-grid,
+  .issues-recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .device-health-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Checkin Timeline Side Panel Styles */
+.checkin-timeline-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+  cursor: pointer;
+}
+
+.checkin-timeline-sidepanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 600px;
+  max-width: 90vw;
+  background: white;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: default;
+  overflow: hidden;
+}
+
+.checkin-timeline-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.checkin-timeline-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  margin-right: 16px;
+}
+
+.checkin-timeline-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.checkin-timeline-title {
+  flex: 1;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.checkin-timeline-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f7f8fa;
+}
+
+.checkin-summary-box {
+  background: white;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.checkin-summary-item {
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7f8fa;
+}
+
+.summary-label {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.checkin-timeline-list {
+  padding: 24px;
+}
+
+.checkin-event-card {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.checkin-event-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.checkin-event-number {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 3px solid #667eea;
+  color: #667eea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 2;
+}
+
+.checkin-event-line {
+  position: absolute;
+  top: 40px;
+  bottom: -24px;
+  width: 2px;
+  background: #e0e0e0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.checkin-event-content {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.checkin-event-content:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateX(-4px);
+}
+
+.checkin-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.checkin-event-type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.checkin-event-type i {
+  font-size: 16px;
+}
+
+.checkin-event-type.type-attendance_start {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.checkin-event-type.type-attendance_stop {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.checkin-event-type.type-checkin {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.checkin-event-time {
+  font-size: 13px;
+  color: #999;
+  font-weight: 500;
+}
+
+.checkin-event-description {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.checkin-event-details,
+.checkin-event-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.checkin-event-details i,
+.checkin-event-location i {
+  font-size: 16px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.checkin-event-distance {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.distance-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #f0f8ff;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.distance-badge i {
+  font-size: 14px;
+}
+
+.cumulative-badge {
+  padding: 4px 10px;
+  background: #f5f5f5;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .checkin-timeline-sidepanel {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .checkin-summary-box {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Scrollbar styling for the side panel */
+.checkin-timeline-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checkin-timeline-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.checkin-timeline-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.checkin-timeline-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+// Modern Permissions Section Styles
+.permissions-section {
+  width: 100%;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  
+  .permissions-container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  // Modern Header
+  .permissions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    
+    h2 {
+      color: #1e293b;
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .date-info {
+      color: #64748b;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      background: rgba(100, 116, 139, 0.1);
+      border-radius: 12px;
+    }
+  }
+
+  // Modern Layout Grid
+  .permissions-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    height: 75vh;
+  }
+
+  // Modernized Sidebar
+  .hourly-sidebar {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    
+    h3 {
+      margin: 0 0 1.5rem 0;
+      color: #1e293b;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .hours-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .hour-item {
+      padding: 1rem;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      background: rgba(248, 250, 252, 0.8);
+      
+      &:hover {
+        background: rgba(241, 245, 249, 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      
+      &.active {
+        color: white;
+        border-color: #6366f1;
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        transform: translateY(-2px);
+        
+        .hour-time, .hour-count, .battery-level, .issues-count {
+          color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .hour-count {
+          background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .critical-badge {
+          background: rgba(239, 68, 68, 0.9);
+        }
+      }
+      
+      .hour-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        
+        .hour-time {
+          font-weight: 600;
+          color: #1e293b;
+          font-size: 1rem;
+        }
+        
+        .hour-count {
+          background: rgba(100, 116, 139, 0.1);
+          color: #64748b;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+      
+      .hour-battery {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        
+        .material-icons {
+          font-size: 18px;
+        }
+        
+        .battery-level {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #475569;
+        }
+      }
+      
+      .hour-issues {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        .issues-count {
+          font-size: 0.75rem;
+          color: #64748b;
+          font-weight: 500;
+          
+          &.critical {
+            color: #ef4444;
+            font-weight: 600;
+          }
+        }
+        
+        .critical-badge {
+          background: #ef4444;
+          color: white;
+          padding: 0.125rem 0.5rem;
+          border-radius: 12px;
+          font-size: 0.625rem;
+          font-weight: 600;
+          align-self: flex-start;
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+      }
+    }
+  }
+
+  // Modern Details Panel
+  .permissions-details {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      
+      h3 {
+        margin: 0;
+        color: #1e293b;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      
+      .hour-summary {
+        display: flex;
+        gap: 1rem;
+        
+        .summary-badge {
+          padding: 0.5rem 1rem;
+          border-radius: 16px;
+          font-size: 0.875rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.2s;
+          
+          &.total {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+          }
+          
+          &.good { 
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #15803d;
+          }
+          
+          &.warning { 
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #d97706;
+          }
+          
+          &.critical { 
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+          }
+          
+          &.issues.critical { 
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+          }
+        }
+      }
+    }
+    
+    .issues-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .issue-record {
+      display: grid;
+      grid-template-columns: 80px 140px 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(248, 250, 252, 0.8);
+      border-radius: 16px;
+      border-left: 4px solid #cbd5e1;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:hover {
+        background: white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      &.critical {
+        border-left-color: #ef4444;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(254, 226, 226, 0.8));
+        
+        &:hover {
+          box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+        }
+      }
+      
+      .record-time {
+        .time {
+        
+          font-size: 0.875rem;
+          color: #64748b;
+          font-weight: 600;
+          background: rgba(100, 116, 139, 0.1);
+          padding: 0.25rem 0.5rem;
+          border-radius: 8px;
+        }
+      }
+      
+      .battery-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        
+        .material-icons {
+          font-size: 24px;
+        }
+        
+        .battery-text {
+          font-weight: 600;
+          font-size: 0.95rem;
+        }
+      }
+      
+      .issues-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        
+       
+      }
+       .issue-chip {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          padding: 0.375rem 0.75rem;
+          border-radius: 16px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          transition: all 0.2s;
+          
+          .material-icons {
+            font-size: 14px;
+          }
+          
+          &:hover {
+            transform: translateY(-1px);
+          }
+          
+          &.red {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+          }
+          
+          &.orange {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #d97706;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+          }
+          
+          &.gray {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            color: #64748b;
+            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.1);
+          }
+        }
+      
+      .no-issues {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #059669;
+        font-size: 0.875rem;
+        font-weight: 500;
+        
+        .material-icons.good {
+          color: #059669;
+          font-size: 18px;
+        }
+      }
+    }
+    
+    .no-hour-data {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+      
+      .material-icons {
+        font-size: 48px;
+        margin-bottom: 1rem;
+        opacity: 0.6;
+        color: #94a3b8;
+      }
+      
+      p {
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // No Data State
+  .no-permissions-data {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    
+    .material-icons {
+      font-size: 64px;
+      margin-bottom: 1.5rem;
+      color: #94a3b8;
+      opacity: 0.7;
+    }
+    
+    h3 {
+      margin-bottom: 0.75rem;
+      color: #1e293b;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #64748b;
+    }
+  }
+}
+
+// Modern Responsive Design
+@media (max-width: 1200px) {
+  .permissions-section .permissions-layout {
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .permissions-section {
+    padding: 1rem;
+    
+    .permissions-layout {
+      grid-template-columns: 1fr;
+      height: auto;
+      gap: 1rem;
+    }
+    
+    .hourly-sidebar {
+      height: 200px;
+      
+      .hours-list {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        
+        .hour-item {
+          min-width: 140px;
+          flex-shrink: 0;
+        }
+      }
+    }
+    
+    .permissions-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+    
+    .issue-record {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
+  .aurora-battery-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .aurora-battery-visual {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+
+        .aurora-battery-shell {
+          width: 33px;
+          height: 60px;
+          border: 3px solid #10b981;
+          border-radius: 8px;
+          position: relative;
+          background: rgba(241, 245, 249, 0.8);
+
+          .aurora-battery-core {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 4px;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+
+            &::before,
+            &::after {
+              content: "";
+              position: absolute;
+              width: 200%;
+              height: 200%;
+              top: 0;
+              left: 50%;
+              background: rgba(255, 255, 255, 0.25);
+              transform-origin: 50% 50%;
+            }
+
+            &::before {
+              border-radius: 45%;
+              animation: wave-animation 7s linear infinite;
+            }
+
+            &::after {
+              border-radius: 40%;
+              animation: wave-animation 13s linear infinite;
+              opacity: 0.7;
+            }
+          }
+
+          .aurora-battery-tip {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 6px;
+            border-radius: 2px;
+          }
+
+          .aurora-battery-percent {
+            position: absolute;
+            z-index: 2;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+        }
+      }
+    }
+
+@keyframes wave-animation {
+  0% {
+    transform: translate(-50%, -75%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -75%) rotate(360deg);
+  }
+}
+
+`]
     }),
     __param(5, Inject(DOCUMENT)),
-    __metadata("design:paramtypes", [Router,
-        ActivatedRoute,
-        DatabaseService,
-        MatDialog,
-        Renderer2,
-        Document])
+    __metadata("design:paramtypes", [typeof (_a = typeof Router !== "undefined" && Router) === "function" ? _a : Object, typeof (_b = typeof ActivatedRoute !== "undefined" && ActivatedRoute) === "function" ? _b : Object, DatabaseService, typeof (_c = typeof MatDialog !== "undefined" && MatDialog) === "function" ? _c : Object, typeof (_d = typeof Renderer2 !== "undefined" && Renderer2) === "function" ? _d : Object, Document])
 ], MapComponent);
 export { MapComponent };
