@@ -742,11 +742,11 @@ interface PlaybackControl {
           <!-- Loading Overlay -->
           <div class="loading-overlay" *ngIf="isMapLoading">
             <!-- <div class="loading-spinner"></div> -->
-            <img style="height: 30%;" src="assets/img/finder.gif" />
+            <img style="height: 30%;" src="assets/mapIcon/finder.gif" />
             <p>Loading map data...</p>
           </div>
           <div class="loading-overlay" *ngIf="locationMarkers.length==0 && !isMapLoading">
-            <img style="height: 80%;" src="assets/img/noData.ico" />
+            <img style="height: 80%;" src="assets/mapIcon/noData.ico" />
             <p>No Data Found</p>
           </div>
         </div>
@@ -1190,7 +1190,7 @@ interface PlaybackControl {
         </div>
          <div class="timeline-container map-container" *ngIf="timelineEvents.length <=0">
       <div class="loading-overlay">
-            <img style="height: 80%;" src="assets/img/noData.ico" />
+            <img style="height: 80%;" src="assets/mapIcon/noData.ico" />
             <p>No Data Found</p>
           </div>
          </div>
@@ -5844,7 +5844,7 @@ summarizeData: any = {};
     // Update end marker position - FIXED VERSION
     const lastIndex = this.locationMarkers.length - 1;
     const endMarkerIcon = L.icon({
-      iconUrl: 'assets/img/person1.png',
+      iconUrl: 'assets/mapIcon/person1.png',
       iconSize: [45, 45],
       iconAnchor: [22, 22],
       popupAnchor: [0, -20]
@@ -5857,7 +5857,7 @@ summarizeData: any = {};
         layer.options &&
         layer.options.icon &&
         layer.options.icon.options &&
-        layer.options.icon.options.iconUrl === 'assets/img/person1.png') {
+        layer.options.icon.options.iconUrl === 'assets/mapIcon/person1.png') {
         this.map.removeLayer(layer);
       }
     });
@@ -5918,7 +5918,7 @@ summarizeData: any = {};
     // Create TrackPlayer instance
     this.trackPlayer = new L.TrackPlayer(this.trackPlayerPoints, {
       markerIcon: L.icon({
-        iconUrl: 'assets/img/person.png',
+        iconUrl: 'assets/mapIcon/person.png',
         iconSize: [45, 45],
         iconAnchor: [22, 22],
         popupAnchor: [0, -20]
@@ -6244,7 +6244,7 @@ private findTimelineDataForCheckin(checkin: any): any {
   private addStartPointLocationMarker(): void {
     console.log("line 678")
     const icon = L.icon({
-      iconUrl: 'assets/img/map-pin.png', // replace with your image path
+      iconUrl: 'assets/mapIcon/map-pin.png', // replace with your image path
       iconSize: [45, 45], // size of the icon
       iconAnchor: [22, 22], // point of the icon which will correspond to marker's location
       popupAnchor: [0, -20] // adjust popup position
@@ -6256,7 +6256,7 @@ private findTimelineDataForCheckin(checkin: any): any {
    private addHomeLocation(): void {
     console.log("line 678")
     const icon = L.icon({
-      iconUrl: 'assets/img/home-address.png', // replace with your image path
+      iconUrl: 'assets/mapIcon/home-address.png', // replace with your image path
       iconSize: [45, 45], // size of the icon
       iconAnchor: [22, 22], // point of the icon which will correspond to marker's location
       popupAnchor: [0, -20] // adjust popup position
@@ -6270,7 +6270,7 @@ private findTimelineDataForCheckin(checkin: any): any {
     const lastIndex = this.locationMarkers.length - 1;
     console.log("line 678")
     const icon = L.icon({
-      iconUrl: 'assets/img/person1.png', // replace with your image path
+      iconUrl: 'assets/mapIcon/person1.png', // replace with your image path
       iconSize: [45, 45], // size of the icon
       iconAnchor: [22, 22], // point of the icon which will correspond to marker's location
       popupAnchor: [0, -20] // adjust popup position
